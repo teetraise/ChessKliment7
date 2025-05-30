@@ -1,0 +1,14 @@
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/ChessClient.GeneratedMSBuildEditorConfig.editorconfig
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/ChessClient.AssemblyInfoInputs.cache
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/ChessClient.AssemblyInfo.cs
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/ChessClient.csproj.CoreCompileInputs.cache
+/Users/user/Desktop/Chess_7/ChessClient/bin/Debug/net8.0/ChessClient
+/Users/user/Desktop/Chess_7/ChessClient/bin/Debug/net8.0/ChessClient.deps.json
+/Users/user/Desktop/Chess_7/ChessClient/bin/Debug/net8.0/ChessClient.runtimeconfig.json
+/Users/user/Desktop/Chess_7/ChessClient/bin/Debug/net8.0/ChessClient.dll
+/Users/user/Desktop/Chess_7/ChessClient/bin/Debug/net8.0/ChessClient.pdb
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/ChessClient.dll
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/refint/ChessClient.dll
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/ChessClient.pdb
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/ChessClient.genruntimeconfig.cache
+/Users/user/Desktop/Chess_7/ChessClient/obj/Debug/net8.0/ref/ChessClient.dll

@@ -1,0 +1,14 @@
+/Users/user/Desktop/Chess_7/ChessServer/bin/Debug/net8.0/ChessServer
+/Users/user/Desktop/Chess_7/ChessServer/bin/Debug/net8.0/ChessServer.deps.json
+/Users/user/Desktop/Chess_7/ChessServer/bin/Debug/net8.0/ChessServer.runtimeconfig.json
+/Users/user/Desktop/Chess_7/ChessServer/bin/Debug/net8.0/ChessServer.dll
+/Users/user/Desktop/Chess_7/ChessServer/bin/Debug/net8.0/ChessServer.pdb
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/ChessServer.GeneratedMSBuildEditorConfig.editorconfig
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/ChessServer.AssemblyInfoInputs.cache
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/ChessServer.AssemblyInfo.cs
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/ChessServer.csproj.CoreCompileInputs.cache
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/ChessServer.dll
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/refint/ChessServer.dll
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/ChessServer.pdb
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/ChessServer.genruntimeconfig.cache
+/Users/user/Desktop/Chess_7/ChessServer/obj/Debug/net8.0/ref/ChessServer.dll
