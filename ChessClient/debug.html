@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>♟️ Онлайн шахматы - Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 3px solid #8B4513;
+            border-radius: 8px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .chess-square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .chess-square.white {
+            background-color: #f0d9b5;
+        }
+
+        .chess-square.black {
+            background-color: #b58863;
+        }
+
+        .chess-square:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .debug-info {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #5a6fd8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>♟️ Диагностика шахматной доски</h1>
+            <p>Проверка загрузки и создания доски</p>
+        </div>
+
+        <div style="text-align: center;">
+            <button onclick="createBoard()">🎯 Создать доску</button>
+            <button onclick="setupPieces()">♟️ Расставить фигуры</button>
+            <button onclick="showDebugInfo()">🔍 Показать отладку</button>
+        </div>
+
+        <div class="chess-board" id="chessBoard">
+            <!-- Поля будут созданы через JavaScript -->
+        </div>
+
+        <div class="debug-info" id="debugInfo">
+            <strong>Отладочная информация:</strong><br>
+            Статус: Ожидание создания доски...
+        </div>
+    </div>
+
+    <script>
+        console.log('🎮 Загрузка скрипта...');
+
+        // Начальная расстановка фигур
+        const INITIAL_BOARD = {
+            'a8': '♜', 'b8': '♞', 'c8': '♝', 'd8': '♛', 'e8': '♚', 'f8': '♝', 'g8': '♞', 'h8': '♜',
+            'a7': '♟', 'b7': '♟', 'c7': '♟', 'd7': '♟', 'e7': '♟', 'f7': '♟', 'g7': '♟', 'h7': '♟',
+            'a2': '♙', 'b2': '♙', 'c2': '♙', 'd2': '♙', 'e2': '♙', 'f2': '♙', 'g2': '♙', 'h2': '♙',
+            'a1': '♖', 'b1': '♘', 'c1': '♗', 'd1': '♕', 'e1': '♔', 'f1': '♗', 'g1': '♘', 'h1': '♖'
+        };
+
+        let gameBoard = {};
+
+        function createBoard() {
+            console.log('📋 Создание доски...');
+            
+            const board = document.getElementById('chessBoard');
+            board.innerHTML = '';
+
+            for (let row = 8; row >= 1; row--) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    const file = String.fromCharCode(97 + col); // a-h
+                    const squareId = file + row;
+                    
+                    square.className = `chess-square ${(row + col) % 2 === 0 ? 'black' : 'white'}`;
+                    square.id = squareId;
+                    square.onclick = () => handleSquareClick(squareId);
+                    
+                    board.appendChild(square);
+                }
+            }
+
+            updateDebugInfo('✅ Доска создана! 64 поля добавлены.');
+            console.log('✅ Доска создана');
+        }
+
+        function setupPieces() {
+            console.log('♟️ Расстановка фигур...');
+            
+            // Очищаем доску
+            document.querySelectorAll('.chess-square').forEach(square => {
+                square.textContent = '';
+            });
+
+            // Расставляем фигуры
+            for (const [square, piece] of Object.entries(INITIAL_BOARD)) {
+                const element = document.getElementById(square);
+                if (element) {
+                    element.textContent = piece;
+                    console.log(`Поставлена фигура ${piece} на ${square}`);
+                } else {
+                    console.error(`Поле ${square} не найдено!`);
+                }
+            }
+
+            gameBoard = { ...INITIAL_BOARD };
+            updateDebugInfo('✅ Фигуры расставлены! 32 фигуры на доске.');
+            console.log('✅ Фигуры расставлены');
+        }
+
+        function handleSquareClick(squareId) {
+            console.log(`🖱️ Клик по полю: ${squareId}`);
+            
+            const square = document.getElementById(squareId);
+            const piece = square.textContent;
+            
+            if (piece) {
+                alert(`Выбрана фигура: ${piece} на поле ${squareId}`);
+            } else {
+                alert(`Пустое поле: ${squareId}`);
+            }
+        }
+
+        function showDebugInfo() {
+            const totalSquares = document.querySelectorAll('.chess-square').length;
+            const occupiedSquares = document.querySelectorAll('.chess-square:not(:empty)').length;
+            
+            const info = `
+📊 Статистика доски:
+• Всего полей: ${totalSquares}
+• Занято полей: ${occupiedSquares}
+• Размер игрового состояния: ${Object.keys(gameBoard).length}
+• Время: ${new Date().toLocaleTimeString()}
+• User Agent: ${navigator.userAgent}
+            `;
+            
+            updateDebugInfo(info);
+            console.log('📊 Отладочная информация:', {
+                totalSquares,
+                occupiedSquares,
+                gameBoard,
+                initialBoard: INITIAL_BOARD
+            });
+        }
+
+        function updateDebugInfo(message) {
+            const debugDiv = document.getElementById('debugInfo');
+            debugDiv.innerHTML = `<strong>Отладочная информация:</strong><br>${message.replace(/\n/g, '<br>')}`;
+        }
+
+        // Автоматическая инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM загружен, автоматическое создание доски...');
+            
+            setTimeout(() => {
+                createBoard();
+                setTimeout(() => {
+                    setupPieces();
+                    updateDebugInfo('🎯 Автоматическая инициализация завершена!\nДоска создана и фигуры расставлены.');
+                }, 500);
+            }, 100);
+        });
+
+        // Проверка загрузки
+        console.log('✅ Скрипт загружен успешно');
+        updateDebugInfo('🔄 Скрипт загружен, ожидание DOM...');
+    </script>
+</body>
+</html>

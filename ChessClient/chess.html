@@ -4,7 +4,273 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>♟️ Онлайн шахматы</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 600px 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .connection-panel, .chess-board-container, .chat-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .connection-panel, .chat-panel {
+            height: fit-content;
+        }
+
+        .chess-board-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 3px solid #8B4513;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .chess-square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .chess-square:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .chess-square.white {
+            background-color: #f0d9b5;
+        }
+
+        .chess-square.black {
+            background-color: #b58863;
+        }
+
+        .chess-square.selected {
+            background-color: #ffeb3b !important;
+            box-shadow: inset 0 0 10px rgba(255, 193, 7, 0.8);
+        }
+
+        .chess-square.possible-move {
+            background-color: #4caf50 !important;
+            opacity: 0.8;
+        }
+
+        .avatar-indicator {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #ff5722;
+            border-radius: 50%;
+            border: 1px solid white;
+            z-index: 5;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            margin: 5px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .status-indicator {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .status-connected {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-disconnected {
+            background: #f44336;
+            color: white;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
+        }
+
+        .chat-message.system {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .chat-message.event {
+            background: #fff3e0;
+            color: #f57c00;
+            font-weight: bold;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .moves-history {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fafafa;
+            margin-top: 15px;
+        }
+
+        .move-item {
+            padding: 5px;
+            margin: 2px 0;
+            background: white;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success { background: #4caf50; }
+        .notification.error { background: #f44336; }
+        .notification.info { background: #2196f3; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -31,11 +297,6 @@
             </div>
 
             <div class="input-group">
-                <label for="tcpPort">🔌 TCP порт:</label>
-                <input type="number" id="tcpPort" placeholder="8080" value="8080">
-            </div>
-
-            <div class="input-group">
                 <label for="wsPort">🌐 WebSocket порт:</label>
                 <input type="number" id="wsPort" placeholder="8082" value="8082">
             </div>
@@ -51,74 +312,17 @@
         </div>
 
         <div class="chess-board-container">
-            <div class="game-controls">
-                <button class="btn" onclick="resetBoard()" disabled id="resetBtn">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <button class="btn" onclick="resetBoard()" id="resetBtn">
                     🔄 Сбросить доску
                 </button>
-                <button class="btn" onclick="clearSelection()" disabled id="clearBtn">
+                <button class="btn" onclick="clearSelection()" id="clearBtn">
                     ✨ Очистить выбор
                 </button>
             </div>
 
-            <!-- Шахматная доска с координатами -->
-            <div class="board-wrapper">
-                <!-- Верхние координаты -->
-                <div class="coord-row top">
-                    <div class="coord-empty"></div>
-                    <div class="coord-label">a</div>
-                    <div class="coord-label">b</div>
-                    <div class="coord-label">c</div>
-                    <div class="coord-label">d</div>
-                    <div class="coord-label">e</div>
-                    <div class="coord-label">f</div>
-                    <div class="coord-label">g</div>
-                    <div class="coord-label">h</div>
-                </div>
-
-                <!-- Основная доска с боковыми координатами -->
-                <div class="board-main">
-                    <!-- Левые координаты -->
-                    <div class="coord-column left">
-                        <div class="coord-label">8</div>
-                        <div class="coord-label">7</div>
-                        <div class="coord-label">6</div>
-                        <div class="coord-label">5</div>
-                        <div class="coord-label">4</div>
-                        <div class="coord-label">3</div>
-                        <div class="coord-label">2</div>
-                        <div class="coord-label">1</div>
-                    </div>
-
-                    <!-- Сама шахматная доска -->
-                    <div class="chess-board" id="chessBoard">
-                        <!-- Поля будут созданы через JavaScript -->
-                    </div>
-
-                    <!-- Правые координаты -->
-                    <div class="coord-column right">
-                        <div class="coord-label">8</div>
-                        <div class="coord-label">7</div>
-                        <div class="coord-label">6</div>
-                        <div class="coord-label">5</div>
-                        <div class="coord-label">4</div>
-                        <div class="coord-label">3</div>
-                        <div class="coord-label">2</div>
-                        <div class="coord-label">1</div>
-                    </div>
-                </div>
-
-                <!-- Нижние координаты -->
-                <div class="coord-row bottom">
-                    <div class="coord-empty"></div>
-                    <div class="coord-label">a</div>
-                    <div class="coord-label">b</div>
-                    <div class="coord-label">c</div>
-                    <div class="coord-label">d</div>
-                    <div class="coord-label">e</div>
-                    <div class="coord-label">f</div>
-                    <div class="coord-label">g</div>
-                    <div class="coord-label">h</div>
-                </div>
+            <div class="chess-board" id="chessBoard">
+                <!-- Поля создаются через JavaScript -->
             </div>
 
             <div style="text-align: center; margin-top: 15px;">
@@ -139,8 +343,7 @@
             </div>
 
             <div class="chat-input">
-                <input type="text" id="chatInput" placeholder="Введите сообщение..." disabled 
-                       onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <input type="text" id="chatInput" placeholder="Введите сообщение..." disabled>
                 <button class="btn" onclick="sendChatMessage()" disabled id="sendChatBtn">
                     📤 Отправить
                 </button>
@@ -148,16 +351,404 @@
         </div>
     </div>
 
-    <!-- Подключаем JavaScript модули в правильном порядке -->
     <script>
-        // Проверяем загрузку файлов
         console.log('🎮 Загрузка шахматного клиента...');
+
+        // Глобальные переменные
+        let isConnected = false;
+        let sessionId = '';
+        let playerName = '';
+        let webSocket = null;
+        let selectedSquare = null;
+        let gameBoard = {};
+        let moveHistory = [];
+
+        // Начальная расстановка фигур
+        const INITIAL_BOARD = {
+            'a8': '♜', 'b8': '♞', 'c8': '♝', 'd8': '♛', 'e8': '♚', 'f8': '♝', 'g8': '♞', 'h8': '♜',
+            'a7': '♟', 'b7': '♟', 'c7': '♟', 'd7': '♟', 'e7': '♟', 'f7': '♟', 'g7': '♟', 'h7': '♟',
+            'a2': '♙', 'b2': '♙', 'c2': '♙', 'd2': '♙', 'e2': '♙', 'f2': '♙', 'g2': '♙', 'h2': '♙',
+            'a1': '♖', 'b1': '♘', 'c1': '♗', 'd1': '♕', 'e1': '♔', 'f1': '♗', 'g1': '♘', 'h1': '♖'
+        };
+
+        // Генерация уникального ID сессии
+        function generateSessionId() {
+            return Math.random().toString(36).substring(2, 10);
+        }
+
+        // Создание шахматной доски
+        function createChessBoard() {
+            const board = document.getElementById('chessBoard');
+            board.innerHTML = '';
+
+            for (let row = 8; row >= 1; row--) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    const file = String.fromCharCode(97 + col); // a-h
+                    const squareId = file + row;
+                    
+                    square.className = `chess-square ${(row + col) % 2 === 0 ? 'black' : 'white'}`;
+                    square.id = squareId;
+                    square.onclick = () => handleSquareClick(squareId);
+                    
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        // Установка начальной позиции
+        function setupInitialPosition() {
+            // Очищаем доску
+            document.querySelectorAll('.chess-square').forEach(square => {
+                square.textContent = '';
+                square.classList.remove('selected', 'possible-move');
+            });
+
+            // Расставляем фигуры
+            for (const [square, piece] of Object.entries(INITIAL_BOARD)) {
+                const element = document.getElementById(square);
+                if (element) {
+                    element.textContent = piece;
+                }
+            }
+
+            gameBoard = { ...INITIAL_BOARD };
+        }
+
+        // Обработка клика по полю
+        function handleSquareClick(squareId) {
+            if (!isConnected) {
+                showNotification('Подключитесь к серверу для игры!', 'error');
+                return;
+            }
+
+            const square = document.getElementById(squareId);
+            
+            if (selectedSquare === null) {
+                // Выбор фигуры
+                if (square.textContent && square.textContent.trim() !== '') {
+                    selectedSquare = squareId;
+                    square.classList.add('selected');
+                }
+            } else {
+                // Выполнение хода
+                if (selectedSquare === squareId) {
+                    // Отмена выбора
+                    clearSelection();
+                } else {
+                    // Выполнение хода
+                    makeMove(selectedSquare, squareId);
+                }
+            }
+        }
+
+        // Очистка выделения
+        function clearSelection() {
+            document.querySelectorAll('.chess-square').forEach(square => {
+                square.classList.remove('selected', 'possible-move');
+            });
+            selectedSquare = null;
+        }
+
+        // Выполнение хода
+        function makeMove(from, to) {
+            const piece = gameBoard[from];
+            if (!piece) return;
+
+            // Обновляем локальное состояние
+            gameBoard[to] = piece;
+            delete gameBoard[from];
+
+            // Обновляем визуализацию
+            document.getElementById(from).textContent = '';
+            document.getElementById(to).textContent = piece;
+
+            // Отправляем ход
+            if (isConnected) {
+                sendMove(from, to, piece);
+            }
+            
+            clearSelection();
+            
+            // Добавляем в историю ходов
+            addMoveToHistory(playerName, from, to, piece);
+        }
+
+        // Сброс доски
+        function resetBoard() {
+            setupInitialPosition();
+            clearSelection();
+            showNotification('Доска сброшена', 'info');
+        }
+
+        // Подключение к серверу
+        async function connect() {
+            const nameInput = document.getElementById('playerName');
+            const hostInput = document.getElementById('serverHost');
+            const wsPortInput = document.getElementById('wsPort');
+            
+            playerName = nameInput.value.trim();
+            const host = hostInput.value.trim() || 'localhost';
+            const wsPort = wsPortInput.value.trim() || '8082';
+
+            if (!playerName) {
+                showNotification('Введите ваше имя!', 'error');
+                return;
+            }
+
+            try {
+                // Подключение WebSocket
+                const wsUrl = `ws://${host}:${wsPort}/?sessionId=${sessionId}`;
+                webSocket = new WebSocket(wsUrl);
+
+                webSocket.onopen = () => {
+                    isConnected = true;
+                    updateConnectionStatus();
+                    
+                    // Регистрируемся на сервере
+                    sendMessage({
+                        type: 'register',
+                        sessionId: sessionId,
+                        playerName: playerName
+                    });
+
+                    showNotification('Подключено к серверу!', 'success');
+                    addChatMessage('Система', `Подключен к серверу как ${playerName}`, 'system');
+                };
+
+                webSocket.onmessage = (event) => {
+                    handleMessage(event.data);
+                };
+
+                webSocket.onclose = () => {
+                    isConnected = false;
+                    updateConnectionStatus();
+                    showNotification('Отключено от сервера', 'error');
+                    addChatMessage('Система', 'Соединение с сервером разорвано', 'system');
+                };
+
+                webSocket.onerror = (error) => {
+                    showNotification('Ошибка подключения к серверу', 'error');
+                    addChatMessage('Система', 'Ошибка подключения к серверу', 'system');
+                };
+
+            } catch (error) {
+                showNotification('Ошибка подключения: ' + error.message, 'error');
+            }
+        }
+
+        // Отключение от сервера
+        function disconnect() {
+            if (webSocket) {
+                webSocket.close();
+            }
+            isConnected = false;
+            updateConnectionStatus();
+            addChatMessage('Система', 'Отключен от сервера', 'system');
+        }
+
+        // Переключение подключения
+        async function toggleConnection() {
+            if (isConnected) {
+                disconnect();
+            } else {
+                await connect();
+            }
+        }
+
+        // Обновление статуса подключения
+        function updateConnectionStatus() {
+            const statusDiv = document.getElementById('connectionStatus');
+            const connectBtn = document.getElementById('connectBtn');
+            const chatInput = document.getElementById('chatInput');
+            const sendChatBtn = document.getElementById('sendChatBtn');
+
+            if (isConnected) {
+                statusDiv.innerHTML = '<span class="status-connected">✅ Подключен</span>';
+                connectBtn.textContent = '🔌 Отключиться';
+                chatInput.disabled = false;
+                sendChatBtn.disabled = false;
+            } else {
+                statusDiv.innerHTML = '<span class="status-disconnected">❌ Не подключен</span>';
+                connectBtn.textContent = '🔗 Подключиться';
+                chatInput.disabled = true;
+                sendChatBtn.disabled = true;
+            }
+        }
+
+        // Отправка сообщения через WebSocket
+        function sendMessage(message) {
+            if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+                try {
+                    webSocket.send(JSON.stringify(message));
+                    return true;
+                } catch (error) {
+                    console.error('Ошибка отправки сообщения:', error);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // Отправка хода
+        function sendMove(from, to, piece) {
+            const move = {
+                type: 'tcp_move',
+                sessionId: sessionId,
+                from: from,
+                to: to,
+                piece: piece,
+                timestamp: new Date().toISOString()
+            };
+
+            if (sendMessage(move)) {
+                showNotification(`Ход отправлен: ${from} → ${to}`, 'success');
+            }
+        }
+
+        // Отправка сообщения в чат
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message || !isConnected) return;
+
+            const chatMessage = {
+                type: 'chat',
+                sessionId: sessionId,
+                message: message,
+                timestamp: new Date().toISOString()
+            };
+
+            if (sendMessage(chatMessage)) {
+                input.value = '';
+            }
+        }
+
+        // Обработка входящих сообщений
+        function handleMessage(data) {
+            try {
+                const message = JSON.parse(data);
+                
+                switch (message.type) {
+                    case 'move':
+                        if (message.player && message.move) {
+                            handleRemoteMove(message.player, message.move);
+                        }
+                        break;
+                    case 'chat':
+                        if (message.player && message.message) {
+                            addChatMessage(message.player, message.message, 'user');
+                        }
+                        break;
+                    case 'event':
+                        if (message.message) {
+                            addChatMessage('Событие', message.message, 'event');
+                        }
+                        break;
+                }
+            } catch (error) {
+                // Простое текстовое сообщение
+                addChatMessage('Сервер', data, 'system');
+            }
+        }
+
+        // Обработка хода от другого игрока
+        function handleRemoteMove(player, move) {
+            if (move.sessionId === sessionId) return; // Не обрабатываем свои ходы
+
+            // Обновляем доску
+            gameBoard[move.to] = gameBoard[move.from] || '♟';
+            delete gameBoard[move.from];
+
+            document.getElementById(move.from).textContent = '';
+            document.getElementById(move.to).textContent = gameBoard[move.to];
+
+            // Добавляем в историю
+            addMoveToHistory(player, move.from, move.to, move.piece);
+            
+            showNotification(`${player} сделал ход: ${move.from} → ${move.to}`, 'info');
+        }
+
+        // Добавление хода в историю
+        function addMoveToHistory(player, from, to, piece) {
+            const movesList = document.getElementById('movesList');
+            const moveDiv = document.createElement('div');
+            moveDiv.className = 'move-item';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            moveDiv.innerHTML = `
+                <strong>${escapeHtml(player)}:</strong> ${piece} ${from} → ${to}
+                <small style="color: #666;">${timestamp}</small>
+            `;
+            
+            movesList.appendChild(moveDiv);
+            movesList.scrollTop = movesList.scrollHeight;
+        }
+
+        // Добавление сообщения в чат
+        function addChatMessage(sender, message, type = 'user') {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            messageDiv.innerHTML = `
+                <strong>${escapeHtml(sender)}:</strong> ${escapeHtml(message)}
+                <small style="float: right; color: #666;">${timestamp}</small>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Показать уведомление
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Экранирование HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Обработка Enter в чате
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatInput = document.getElementById('chatInput');
+            chatInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+        });
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Инициализация шахматного клиента...');
+            
+            // Генерируем уникальный ID сессии
+            sessionId = generateSessionId();
+            console.log('📋 Session ID:', sessionId);
+            
+            // Создаем шахматную доску
+            createChessBoard();
+            
+            // Устанавливаем начальную позицию
+            setupInitialPosition();
+            
+            console.log('✅ Инициализация завершена');
+        });
+
+        console.log('✅ Скрипт загружен успешно');
     </script>
-    <script src="js/config.js"></script>
-    <script src="js/chess-board.js"></script>
-    <script src="js/connection.js"></script>
-    <script src="js/chat.js"></script>
-    <script src="js/game-logic.js"></script>
-    <script src="js/main.js"></script>
 </body>
 </html>
